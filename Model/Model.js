@@ -1,5 +1,8 @@
 var messageSchema = {
-    titulo:String,
+    titulo:{
+        type:String,
+        required:true
+    },
     descripcion:String,
     tipo:String
 }

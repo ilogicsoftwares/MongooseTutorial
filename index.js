@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import express from 'express';
-import {messageSchema} from './Model/Model'
+import messageSchema from './Model/Model';
 
 let app=express();
 let Schema=mongoose.Schema;
@@ -12,14 +12,30 @@ var Message=mongoose.model("Message",message_schema);
 app.get("/",(req,res)=>{
     res.send('Hola Mongoose');
 });
+
+app.get("/messages",(req,res)=>{
+
+    Message.find({}).then((messages)=>{
+     res.send(messages);
+    });
+    
+});
+
+app.get("/message/:titulo",(req,res)=>{
+
+    Message.find({titulo:req.params.titulo}).then((message)=>{
+     res.send(message);
+    });
+    
+});
 app.post('/message',express.json(),(req,resp)=>{
      var message=new Message({
         titulo:req.body.titulo,
         descripcion:req.body.descripcion,
         tipo:req.body.tipo
      });
-     message.save(()=>{
-         resp.send('Usuario Guardado');
+     message.save((err)=>{
+         resp.send(err ? err.errmsg:"Se ha Guardado los datos");
      });
 
 });
