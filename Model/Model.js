@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
-import { Schema} from "mongoose";
+import {Schema} from 'mongoose';
+
 
 //model
- var Modela={  
+ var Schemas={  
       messageSchema : {
         titulo:{
         type:String,
@@ -24,7 +24,7 @@ import { Schema} from "mongoose";
             type:String,
             required:true
         },
-        fechaCreacio:String,
+        fechaCreacion:String,
         licence:{
            type:Schema.Types.ObjectId,
            ref:'Licence'
@@ -51,22 +51,8 @@ import { Schema} from "mongoose";
         messageCount:Number
     }
 } ;
-var Schemax={
-    userSchema: new Schema(Modela.userSchema),
-    messageSchema:new Schema(Modela.messageSchema),
-    licenceSchema:new Schema(Modela.licenceSchema),
-    licenceTypeSchema:new Schema(Modela.licenceTypeSchema)
-    }
-//index
-Schemax.userSchema.index({userName:1,licence:1});
-Schemax.messageSchema.index({user:1,titulo:1});
-Schemax.licenceSchema.index({number:1});
-var Modelo={};
-Modelo.User=mongoose.model("User",Schemax.userSchema);
-Modelo.Message=mongoose.model("Message",Schemax.messageSchema);
-Modelo.Licence=mongoose.model("licence",Schemax.licenceSchema);
-Modelo.licenceType=mongoose.model("licenceType",Schemax.licenceTypeSchema);
 
 
 
-export default {Modelo,mongoose};
+
+export default  Schemas;

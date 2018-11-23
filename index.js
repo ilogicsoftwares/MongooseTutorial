@@ -1,9 +1,18 @@
 import express from 'express';
-import {Modelo,mongoose} from './Model/Model';
+import mongoose from 'mongoose';
+import Schemas from './Model/Model';
+import ModelUtility from './Model/ModelBuilder'
+const Schema=mongoose.Schema;
 
 let app=express();
-var Modelx=Modelo;
-var Message=Modelo.Message;
+//Models 
+var modelUtility=new ModelUtility();
+var SchemaComponent = modelUtility.buildSchema(Schemas);
+
+var Message=mongoose.model('Message',SchemaComponent.messageSchema);
+var Licence=mongoose.model('Licence',SchemaComponent.licenceSchema);
+var User = mongoose.model('User',SchemaComponent.userSchema);
+var LicenceType=mongoose.model('LicenceType',SchemaComponent.licenceTypeSchema);
 app.get("/",(req,res)=>{
     res.send('Hola Mongoose');
 });
@@ -29,12 +38,22 @@ app.post('/message',express.json(),(req,resp)=>{
         descripcion:req.body.descripcion,
         tipo:req.body.tipo
      });
-     message.save((err)=>{
-         resp.send(err ? err.errmsg:"Se ha Guardado los datos");
+     message.   save((err)=>{
+         resp.send(err ? err.message:"Se ha Guardado los datos");
      });
 
 });
+app.post('/CreateUser',express.json(),(req,resp)=>{
+  User.create({
+    userName:req.body.userName,
+    password:req.body.password,
+    fechaCreacion:new Date()
+  }).then((object)=>{
+     resp.send(object);
+  }
+  ).catch((err)=>resp.send(err.errmsg));
 
+});
 
 mongoose.connect('mongodb://localhost:27017/QuiclyMessages')
 .then(()=>console.log('Mongo Connected'))
