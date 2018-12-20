@@ -54,6 +54,26 @@ app.post('/CreateUser',express.json(),(req,resp)=>{
   ).catch((err)=>resp.send(err.errmsg));
 
 });
+app.post('/EditMessage/:id/:titulo/:descripcion',express.json(),(req,resp)=>{
+    
+    let id=req.params.id;
+    let titulo=req.params.titulo;
+    let descripcion=req.params.descripcion;
+
+    Message.findById(id,(err,message)=>{
+      if(titulo)
+      message.titulo=titulo;
+      if(descripcion)
+      message.descripcion=descripcion;
+      message.save((err,upadtedMessage)=>{
+          resp.send(upadtedMessage ? upadtedMessage:err);
+      })
+    });
+  
+  });
+
+
+
 
 mongoose.connect('mongodb://localhost:27017/QuiclyMessages')
 .then(()=>console.log('Mongo Connected'))
