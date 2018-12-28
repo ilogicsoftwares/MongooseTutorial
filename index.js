@@ -24,7 +24,18 @@ app.get("/messages",(req,res)=>{
     });
     
 });
+app.get("/message/:titulo/:descripcion/:tipo",(req,resp)=>{
 
+    var message=new Message({
+       titulo:req.params.titulo,
+       descripcion:req.params.descripcion,
+       tipo:req.params.tipo
+    });
+    message.   save((err)=>{
+        resp.send(err ? err.message:"Se ha Guardado los datos");
+    });
+   
+});
 app.get("/message/:titulo",(req,res)=>{
 
     Message.find({titulo:req.params.titulo}).then((message)=>{
@@ -54,7 +65,7 @@ app.post('/CreateUser',express.json(),(req,resp)=>{
   ).catch((err)=>resp.send(err.errmsg));
 
 });
-app.post('/EditMessage/:id/:titulo/:descripcion',express.json(),(req,resp)=>{
+app.get('/EditMessage/:id/:titulo/:descripcion',express.json(),(req,resp)=>{
     
     let id=req.params.id;
     let titulo=req.params.titulo;
