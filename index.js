@@ -17,10 +17,10 @@ app.get("/",(req,res)=>{
     res.send('Hola Mongoose');
 });
 
-app.get("/messages",(req,res)=>{
-
-    Message.find({}).then((messages)=>{
-     res.send(messages);
+app.get("/messages/:userid",(req,res)=>{
+    
+    Message.find({user:req.params.userid}).then((messages)=>{
+        res.send(messages);
     });
     
 });
@@ -39,7 +39,7 @@ app.post('/login',express.json(),(req,resp)=>{
     User.findOne({userName:email}).then((user)=>{
         if(user.password==password)
         {
-            resp.send({estatus:true});
+            resp.send({estatus:true,message:user._id});
         } else
         {
             resp.send({estatus:false});
@@ -80,17 +80,19 @@ app.get('/deleteMessage/:id',(req,resp)=>{
       });
     
 });
-app.get('/EditMessage/:id/:titulo/:descripcion',express.json(),(req,resp)=>{
+app.get('/EditMessage/:id/:titulo/:descripcion/:userid',express.json(),(req,resp)=>{
     
     var id=req.params.id;
+    var userid=req.params.userid;
     var titulo=req.params.titulo;
     var descripcion=req.params.descripcion;
 	console.log(req.params);
-      if (id=="null"){
+      if (id=="0"){
 		var message=new Message({
         titulo:titulo,
         descripcion:descripcion,
-        tipo:""
+        tipo:"",
+        user:userid
      });
      message.   save((err)=>{
          resp.send(err ? err.message:"Se ha Guardado los datos");
