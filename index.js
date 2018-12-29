@@ -24,18 +24,7 @@ app.get("/messages",(req,res)=>{
     });
     
 });
-app.get("/message/:titulo/:descripcion/:tipo",(req,resp)=>{
 
-    var message=new Message({
-       titulo:req.params.titulo,
-       descripcion:req.params.descripcion,
-       tipo:req.params.tipo
-    });
-    message.   save((err)=>{
-        resp.send(err ? err.message:"Se ha Guardado los datos");
-    });
-   
-});
 app.get("/message/:titulo",(req,res)=>{
 
     Message.find({titulo:req.params.titulo}).then((message)=>{
@@ -43,6 +32,24 @@ app.get("/message/:titulo",(req,res)=>{
     });
     
 });
+app.post('/login',express.json(),(req,resp)=>{
+    var email=req.body.mail;
+    var password=req.body.password;
+    
+    User.findOne({userName:email}).then((user)=>{
+        if(user.password==password)
+        {
+            resp.send({estatus:true});
+        } else
+        {
+            resp.send({estatus:false});
+        }  
+    });
+
+
+});
+
+
 app.post('/message',express.json(),(req,resp)=>{
      var message=new Message({
         titulo:req.body.titulo,
@@ -65,13 +72,32 @@ app.post('/CreateUser',express.json(),(req,resp)=>{
   ).catch((err)=>resp.send(err.errmsg));
 
 });
+app.get('/deleteMessage/:id',(req,resp)=>{
+
+    Message.deleteOne({ _id: req.params.id }, function (err) {
+        if (err) resp.send(handleError(err));
+        // deleted at most one tank document
+      });
+    
+});
 app.get('/EditMessage/:id/:titulo/:descripcion',express.json(),(req,resp)=>{
     
-    let id=req.params.id;
-    let titulo=req.params.titulo;
-    let descripcion=req.params.descripcion;
-
-    Message.findById(id,(err,message)=>{
+    var id=req.params.id;
+    var titulo=req.params.titulo;
+    var descripcion=req.params.descripcion;
+	console.log(req.params);
+      if (id=="null"){
+		var message=new Message({
+        titulo:titulo,
+        descripcion:descripcion,
+        tipo:""
+     });
+     message.   save((err)=>{
+         resp.send(err ? err.message:"Se ha Guardado los datos");
+     });
+		  
+	  }else{
+	  Message.findById(id,(err,message)=>{
       if(titulo)
       message.titulo=titulo;
       if(descripcion)
@@ -79,7 +105,10 @@ app.get('/EditMessage/:id/:titulo/:descripcion',express.json(),(req,resp)=>{
       message.save((err,upadtedMessage)=>{
           resp.send(upadtedMessage ? upadtedMessage:err);
       })
-    });
+       });	  
+		  
+	  }
+    
   
   });
 
