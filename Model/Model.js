@@ -18,11 +18,16 @@ import {Schema} from 'mongoose';
      userSchema :{
         userName:{
             type:String,
-            required:true
+            required:true,
+            index:true,
+            unique:true
         },
         password:{
             type:String,
             required:true
+        },
+        name:{
+            type:String
         },
         fechaCreacion:String,
         licence:{

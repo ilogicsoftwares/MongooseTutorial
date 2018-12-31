@@ -12,6 +12,7 @@ var SchemaComponent = modelUtility.buildSchema(Schemas);
 var Message=mongoose.model('Message',SchemaComponent.messageSchema);
 var Licence=mongoose.model('Licence',SchemaComponent.licenceSchema);
 var User = mongoose.model('User',SchemaComponent.userSchema);
+User.createIndexes();
 var LicenceType=mongoose.model('LicenceType',SchemaComponent.licenceTypeSchema);
 app.get("/",(req,res)=>{
     res.send('Hola Mongoose');
@@ -37,13 +38,14 @@ app.post('/login',express.json(),(req,resp)=>{
     var password=req.body.password;
     
     User.findOne({userName:email}).then((user)=>{
+       
         if(user.password==password)
         {
             resp.send({estatus:true,message:user._id});
-        } else
-        {
+        } 
+        
             resp.send({estatus:false});
-        }  
+        
     });
 
 
@@ -64,12 +66,13 @@ app.post('/message',express.json(),(req,resp)=>{
 app.post('/CreateUser',express.json(),(req,resp)=>{
   User.create({
     userName:req.body.userName,
-    password:req.body.password,
+    password:req.body.password,       
+    name:req.body.name,
     fechaCreacion:new Date()
   }).then((object)=>{
      resp.send(object);
   }
-  ).catch((err)=>resp.send(err.errmsg));
+  ).catch((err)=>resp.send({estatus:false,message:err.errmsg}));
 
 });
 app.get('/deleteMessage/:id',(req,resp)=>{
