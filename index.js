@@ -26,6 +26,14 @@ app.get("/messages/:userid",(req,res)=>{
     
 });
 
+app.get("/users",(req,res)=>{
+    
+    User.find({}).then((users)=>{
+        res.send(users);
+    });
+    
+});
+
 app.get("/message/:titulo",(req,res)=>{
 
     Message.find({titulo:req.params.titulo}).then((message)=>{
@@ -65,14 +73,20 @@ app.post('/message',express.json(),(req,resp)=>{
 });
 app.post('/CreateUser',express.json(),(req,resp)=>{
   User.create({
-    userName:req.body.userName,
+    userName:req.body.username,
     password:req.body.password,       
     name:req.body.name,
     fechaCreacion:new Date()
   }).then((object)=>{
-     resp.send(object);
+     resp.send({estatus:true,message:"Listo"});
   }
-  ).catch((err)=>resp.send({estatus:false,message:err.errmsg}));
+  ).catch((err)=>{
+    console.log(err);  
+    resp.send({
+      estatus:false,message:err.errmsg
+    
+    });
+  });
 
 });
 app.get('/deleteMessage/:id',(req,resp)=>{
