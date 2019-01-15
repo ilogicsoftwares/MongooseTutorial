@@ -78,6 +78,19 @@ app.post('/CreateUser',express.json(),(req,resp)=>{
     name:req.body.name,
     fechaCreacion:new Date()
   }).then((object)=>{
+    
+       
+        modelUtility.getPlantillas().map (x =>{
+           var message=new Message({
+               titulo:x.titulo,
+               descripcion:x.mensaje,
+               tipo:"",
+               user:object._id
+           });
+           message.save();
+        });
+   
+
      resp.send({estatus:true,message:"Listo"});
   }
   ).catch((err)=>{
@@ -112,8 +125,8 @@ app.post('/EditMessage/',express.json(),(req,resp)=>{
         user:userid
      });
      message.   save((err)=>{
-         resp.send(err ? err.message:"Se ha Guardado los datos");
-     });
+        resp.send(err ? err.message:"Se ha Guardado los datos");
+    });
 		  
 	  }else{
 	  Message.findById(id,(err,message)=>{
