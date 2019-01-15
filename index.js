@@ -97,13 +97,13 @@ app.get('/deleteMessage/:id',(req,resp)=>{
       });
     
 });
-app.get('/EditMessage/:id/:titulo/:descripcion/:userid',express.json(),(req,resp)=>{
+app.post('/EditMessage/',express.json(),(req,resp)=>{
     
-    var id=req.params.id;
-    var userid=req.params.userid;
-    var titulo=req.params.titulo;
-    var descripcion=req.params.descripcion;
-	console.log(req.params);
+    var id=req.body.id;
+    var userid=req.body.userid;
+    var titulo=req.body.titulo;
+    var descripcion=req.body.descripcion;
+	
       if (id=="0"){
 		var message=new Message({
         titulo:titulo,
