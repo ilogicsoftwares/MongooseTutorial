@@ -103,32 +103,7 @@ class ModelUtility {
       return plantillas;
     }
     
-    getListofColors (){
-        var colors = [
-            {
-                name:'Primary',
-                color:'#1976D2'
-            },
-            {
-                name:'Success',
-                color:'#4CAF50'
-            },
-            {
-                name:'Info',
-                color:'#E91E63'
-            },
-            {
-                name:'Warning',
-                color:'#7B1FA2'
-            },
-            {
-                name:'Danger',
-                color:'#D32F2F'
-            },
-
-
-        ]
-    }
+   
     
 
 }

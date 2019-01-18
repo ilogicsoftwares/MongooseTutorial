@@ -115,13 +115,14 @@ app.post('/EditMessage/',express.json(),(req,resp)=>{
     var id=req.body.id;
     var userid=req.body.userid;
     var titulo=req.body.titulo;
+    var tipo =req.body.tipo;
     var descripcion=req.body.descripcion;
 	
       if (id=="0"){
 		var message=new Message({
         titulo:titulo,
         descripcion:descripcion,
-        tipo:"",
+        tipo:tipo,
         user:userid
      });
      message.   save((err)=>{
@@ -134,6 +135,8 @@ app.post('/EditMessage/',express.json(),(req,resp)=>{
       message.titulo=titulo;
       if(descripcion)
       message.descripcion=descripcion;
+      if(tipo)
+      message.tipo=tipo;
       message.save((err,upadtedMessage)=>{
           resp.send(upadtedMessage ? upadtedMessage:err);
       })
