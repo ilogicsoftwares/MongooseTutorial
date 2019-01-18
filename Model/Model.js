@@ -54,6 +54,10 @@ import {Schema} from 'mongoose';
         },
         cost:String,
         messageCount:Number
+    },
+    messageTipoSchema:{
+        name:String,
+        color:String
     }
 } ;
 
