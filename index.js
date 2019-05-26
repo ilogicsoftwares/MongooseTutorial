@@ -27,10 +27,19 @@ app.get("/", (req, res) => {
 });
 
 app.get("/messages/:userid", (req, res) => {
-
-    Message.find({ user: req.params.userid }).then((messages) => {
-        res.send(messages);
-    });
+  
+    User.findOne({_id:req.params.userid},(err,user)=>{
+        if(user.licence){
+            Message.find({ user: req.params.userid }).then((messages) => {
+                res.send(messages);
+            });
+        }else{
+            Message.find({ user: req.params.userid }).limit(9).then((messages) => {
+                res.send(messages);
+            });
+        }
+    })
+   
 
 });
 
@@ -53,9 +62,15 @@ app.post('/login', express.json(), (req, resp) => {
     var email = req.body.mail;
     var password = req.body.password;
 
-    User.findOne({ userName: email }).then((user) => {
+    User.findOne({ userName: email }).populate('licence').then((user) => {
 
         if (user.password == password) {
+            if(user.licence){
+                let objeto = user._id + "," + user.licence.number +"," + user.licence.token
+                resp.send({ estatus: true, message: objeto });
+                return;    
+            }
+
             resp.send({ estatus: true, message: user._id });
 			return;
         }
@@ -69,6 +84,8 @@ app.post('/login', express.json(), (req, resp) => {
 
 
 app.post('/message', express.json(), (req, resp) => {
+   
+   
     var message = new Message({
         titulo: req.body.titulo,
         descripcion: req.body.descripcion,
@@ -148,7 +165,14 @@ app.post('/billing/', express.json(), (req, resp) => {
             licence.save((err, licence) => {
                 User.findOne({_id: userid },(err,user)=>{
                     user.licence = licence._id;
-                    resp.send({estatus:"true"});
+                    user.save((err,user)=>{
+                        if(err){
+                            resp.send({estatus:"false"});        
+                        }else{
+                            resp.send({estatus:"true"});
+                        }
+                    });
+                    
                 });
             });
            }
@@ -163,22 +187,36 @@ app.post('/billing/', express.json(), (req, resp) => {
 
 app.post('/EditMessage/', express.json(), (req, resp) => {
 
-    var id = req.body.id;
-    var userid = req.body.userid;
-    var titulo = req.body.titulo;
-    var tipo = req.body.tipo;
-    var descripcion = req.body.descripcion;
+    let id = req.body.id;
+    let userid = req.body.userid;
+    let titulo = req.body.titulo;
+    let tipo = req.body.tipo;
+    let descripcion = req.body.descripcion;
 
     if (id == "0") {
-        var message = new Message({
-            titulo: titulo,
-            descripcion: descripcion,
-            tipo: tipo,
-            user: userid
-        });
-        message.save((err) => {
-            resp.send(err ? err.message : "Se ha Guardado los datos");
-        });
+        User.findOne({_id:userid},(err,user)=>{
+              let licence =user.licence;
+              Message.find({user:userid},(err,user)=>{
+                if(licence){
+
+                }else if(user.length>=9){
+                    resp.send({message : "You need to Buy for more Messages"});
+                    return;
+                }
+                
+                var message = new Message({
+                    titulo: titulo,
+                    descripcion: descripcion,
+                    tipo: tipo,
+                    user: userid
+                });
+                message.save((err) => {
+                    resp.send({message : "Message Saved"});
+                });
+              });
+
+        })
+       
 
     } else {
         Message.findById(id, (err, message) => {
