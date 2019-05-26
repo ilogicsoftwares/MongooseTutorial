@@ -44,7 +44,8 @@ import {Schema} from 'mongoose';
              type:Schema.Types.ObjectId,
              ref:"licenceType"
          },
-         inicion:String,
+         token:String, 
+         inicio:String,
          fin:String
     },
     licenceTypeSchema:{
