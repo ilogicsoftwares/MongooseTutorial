@@ -20,6 +20,10 @@ var SchemaComponent = modelUtility.buildSchema(Schemas);
 var Message = mongoose.model('Message', SchemaComponent.messageSchema);
 var Licence = mongoose.model('Licence', SchemaComponent.licenceSchema);
 var User = mongoose.model('User', SchemaComponent.userSchema);
+//Default Values in DB
+const LicenceStatuses= {Active:1,Expired:0,Refound:2};
+//Default Values in DB
+
 User.createIndexes();
 var LicenceType = mongoose.model('LicenceType', SchemaComponent.licenceTypeSchema);
 app.get("/", (req, res) => {
@@ -162,6 +166,7 @@ app.post('/billing/', express.json(), (req, resp) => {
             licence.token = orderToken;
             licence.inicio = inicio;
             licence.fin = fin;
+            licence.user = userid;
             licence.save((err, licence) => {
                 User.findOne({_id: userid },(err,user)=>{
                     user.licence = licence._id;

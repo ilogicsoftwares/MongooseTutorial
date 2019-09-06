@@ -46,7 +46,15 @@ import {Schema} from 'mongoose';
          },
          token:String, 
          inicio:String,
-         fin:String
+         fin:String,
+         status:{
+            type:Number,
+            default:1
+         },
+         user:{
+            type:Schema.Types.ObjectId,
+            ref:"User"
+        }
     },
     licenceTypeSchema:{
         name:{
