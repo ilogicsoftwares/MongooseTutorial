@@ -3,6 +3,10 @@ import mongoose from 'mongoose';
 import Schemas from './Model/Model';
 import ModelUtility from './Model/ModelBuilder';
 import Verifier from 'google-play-billing-validator';
+import jwt from 'jsonwebtoken';
+import token from './utility/tokenFunc';
+import cryt from 'cryptr';
+const cry = new cryt("NicoleDylanKelly")
 const Schema = mongoose.Schema;
 const options = {
     email: "kopipaste@api-8743698024900724737-401710.iam.gserviceaccount.com",
@@ -26,41 +30,9 @@ const LicenceStatuses= {Active:1,Expired:0,Refound:2};
 
 User.createIndexes();
 var LicenceType = mongoose.model('LicenceType', SchemaComponent.licenceTypeSchema);
+
 app.get("/", (req, res) => {
-    res.send('Hola Mongoose');
-});
-
-app.get("/messages/:userid", (req, res) => {
-  
-    User.findOne({_id:req.params.userid},(err,user)=>{
-        if(user.licence){
-            Message.find({ user: req.params.userid }).then((messages) => {
-                res.send(messages);
-            });
-        }else{
-            Message.find({ user: req.params.userid }).limit(9).then((messages) => {
-                res.send(messages);
-            });
-        }
-    })
-   
-
-});
-
-app.get("/users", (req, res) => {
-
-    User.find({}).then((users) => {
-        res.send(users);
-    });
-
-});
-
-app.get("/message/:titulo", (req, res) => {
-
-    Message.find({ titulo: req.params.titulo }).then((message) => {
-        res.send(message);
-    });
-
+    res.send('KopyPaste Api');
 });
 app.post('/login', express.json(), (req, resp) => {
     var email = req.body.mail;
@@ -68,14 +40,16 @@ app.post('/login', express.json(), (req, resp) => {
 
     User.findOne({ userName: email }).populate('licence').then((user) => {
 
-        if (user.password == password) {
+        if (cry.decrypt(user.password) == password) {
+
+            const token = jwt.sign({user}, 'NicoleDylanKelly');
             if(user.licence){
                 let objeto = user._id + "," + user.licence.number +"," + user.licence.token
-                resp.send({ estatus: true, message: objeto });
+                resp.send({ estatus: true, message: objeto,token:token });
                 return;    
             }
 
-            resp.send({ estatus: true, message: user._id });
+            resp.send({ estatus: true, message: user._id,token:token });
 			return;
         }
 
@@ -85,25 +59,12 @@ app.post('/login', express.json(), (req, resp) => {
 
 
 });
-
-
-app.post('/message', express.json(), (req, resp) => {
-   
-   
-    var message = new Message({
-        titulo: req.body.titulo,
-        descripcion: req.body.descripcion,
-        tipo: req.body.tipo
-    });
-    message.save((err) => {
-        resp.send(err ? err.message : "Se ha Guardado los datos");
-    });
-
-});
 app.post('/CreateUser', express.json(), (req, resp) => {
+    
+    let encryptedPassword=cry.encrypt(req.body.password);
     User.create({
         userName: req.body.username,
-        password: req.body.password,
+        password: encryptedPassword,
         name: req.body.name,
         fechaCreacion: new Date()
     }).then((object) => {
@@ -131,7 +92,49 @@ app.post('/CreateUser', express.json(), (req, resp) => {
     });
 
 });
-app.get('/deleteMessage/:id', (req, resp) => {
+app.get("/messages/:userid",token, (req, res) => {
+  
+    User.findOne({_id:req.params.userid},(err,user)=>{
+        if(user.licence){
+            Message.find({ user: req.params.userid }).then((messages) => {
+                res.send(messages);
+            });
+        }else{
+            Message.find({ user: req.params.userid }).limit(9).then((messages) => {
+                res.send(messages);
+            });
+        }
+    });
+});
+
+/*app.get("/users", (req, res) => {
+
+    User.find({}).then((users) => {
+        res.send(users);
+    });
+
+});*/
+app.get("/message/:titulo",token, (req, res) => {
+
+    Message.find({ titulo: req.params.titulo }).then((message) => {
+        res.send(message);
+    });
+
+});
+app.post('/message',token, express.json(), (req, resp) => {
+   
+   
+    var message = new Message({
+        titulo: req.body.titulo,
+        descripcion: req.body.descripcion,
+        tipo: req.body.tipo
+    });
+    message.save((err) => {
+        resp.send(err ? err.message : "Se ha Guardado los datos");
+    });
+
+});
+app.get('/deleteMessage/:id',token, (req, resp) => {
 
     Message.deleteOne({ _id: req.params.id }, function (err) {
         if (err) resp.send(handleError(err));
@@ -139,7 +142,7 @@ app.get('/deleteMessage/:id', (req, resp) => {
     });
 
 });
-app.post('/billing/', express.json(), (req, resp) => {
+app.post('/billing/',token, express.json(), (req, resp) => {
     let orderID = req.body.orderid;
     let orderToken = req.body.ordertoken;
     let orderSku=req.body.sku;
@@ -189,8 +192,7 @@ app.post('/billing/', express.json(), (req, resp) => {
         })
 
 });
-
-app.post('/EditMessage/', express.json(), (req, resp) => {
+app.post('/EditMessage/',token, express.json(), (req, resp) => {
 
     let id = req.body.id;
     let userid = req.body.userid;
@@ -240,9 +242,6 @@ app.post('/EditMessage/', express.json(), (req, resp) => {
 
 
 });
-
-
-
 
 mongoose.connect('mongodb://localhost:27017/QuiclyMessages')
     .then(() => console.log('Mongo Connected'))
