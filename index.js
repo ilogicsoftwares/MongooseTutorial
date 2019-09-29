@@ -243,7 +243,7 @@ app.post('/EditMessage/',token, express.json(), (req, resp) => {
 
 });
 
-mongoose.connect('mongodb://localhost:27017/QuiclyMessages')
+mongoose.connect('mongodb://popestmaster:Nicole1721%23@localhost:27017/QuiclyMessages')
     .then(() => console.log('Mongo Connected'))
     .catch((err) => console.log(err));
 
