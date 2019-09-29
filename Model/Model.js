@@ -33,6 +33,9 @@ import {Schema} from 'mongoose';
         licence:{
            type:Schema.Types.ObjectId,
            ref:'Licence'
+        },
+        requirementKey:{
+            type:String
         }
     },
     licenceSchema:{

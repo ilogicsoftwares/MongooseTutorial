@@ -6,6 +6,7 @@ import Verifier from 'google-play-billing-validator';
 import jwt from 'jsonwebtoken';
 import token from './utility/tokenFunc';
 import cryt from 'cryptr';
+import nodemailer from 'nodemailer';
 const cry = new cryt("NicoleDylanKelly")
 const Schema = mongoose.Schema;
 const options = {
@@ -242,6 +243,57 @@ app.post('/EditMessage/',token, express.json(), (req, resp) => {
 
 
 });
+
+app.post("/sendEmail",token,express.json(),(req,resp)=>{
+    let recoverKey = Math.floor(100000 + Math.random() * 900000);;
+    let id=req.body.id;
+    
+    User.updateOne({_id:id},{requirementKey:recoverKey}).then((data)=>{
+    let content = `Ingrese este codigo para cambiar su Clave: ${requirementKey}`
+        sendEmail(data.userName,"Recuperar/Cambiar Clave",content);
+    });
+   
+
+
+
+});
+
+
+async function sendEmail(to,subject,content){
+    
+    nodemailer.createTestAccount((err, account) => {
+        let transporter = nodemailer.createTransport({
+            host: 'smtp.googlemail.com', // Gmail Host
+            port: 465, // Port
+            secure: true, // this is true as port is 465
+            auth: {
+                user: 'siliceinnovaciones@gmail.com', //Gmail username
+                pass: 'A17211721' // Gmail password
+            }
+        });
+     
+        let mailOptions = {
+            from: '"Silice Innovaciones" <siliceinnovaciones@gmail.com>',
+            to: to, // Recepient email address. Multiple emails can send separated by commas
+            subject: 'Recuperar/Cambio de Clave',
+            html: content
+        };
+     
+         transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return  console.log(error);
+            }else{
+                console.log('Message sent: %s', info.messageId);
+            }
+           
+        });
+    });
+}
+
+
+
+
+
 
 mongoose.connect('mongodb://popestmaster:Nicole1721%23@localhost:27017/QuiclyMessages')
     .then(() => console.log('Mongo Connected'))
