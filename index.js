@@ -247,9 +247,10 @@ app.post('/EditMessage/',token, express.json(), (req, resp) => {
 app.post("/passwordChange",express.json(),(req,res)=>{
     let code=req.body.key;
     let id=req.body.id;
-    let encryptedPassword=cry.encrypt(req.body.password);
+  
     User.findOne({_id:id}).then(data=>{
-        if(data.requirementKey && data.requirementKey==code){
+        if(data.requirementKey && data.requirementKey==code && req.body.password){
+            let encryptedPassword=cry.encrypt(req.body.password);
             data.password=encryptedPassword;
             data.save().then((data)=>{
                 res.send({success:true,message:"Password Changed"});
@@ -268,12 +269,16 @@ app.post("/passwordChange",express.json(),(req,res)=>{
 })
 app.post("/sendEmail",express.json(),(req,resp)=>{
     let recoverKey = Math.floor(100000 + Math.random() * 900000);;
-    let id=req.body.id;
+    let id=req.body.email;
     
-    User.findOneAndUpdate({_id:id},{requirementKey:recoverKey}).exec().then((data)=>{
-    let content = `Ingrese este codigo para cambiar su Clave: <strong>${data.requirementKey}</strong>`
+    User.findOneAndUpdate({userName:id},{requirementKey:recoverKey}).exec().then((data)=>{
+     if(!data){
+         resp.send({success:false,message="Email not found"});
+         return;
+     }
+    let content = `Ingrese este codigo para cambiar su Clave: <strong>${recoverKey}</strong>`
     sendEmail(data.userName,"Recuperar/Cambiar Clave",content);
-      resp.end();
+      resp.send({success:true});
     });
    
 });
