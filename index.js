@@ -244,22 +244,42 @@ app.post('/EditMessage/',token, express.json(), (req, resp) => {
 
 });
 
-app.post("/sendEmail",token,express.json(),(req,resp)=>{
+app.post("/passwordChange",express.json(),(req,res)=>{
+    let code=req.body.key;
+    let id=req.body.id;
+    let encryptedPassword=cry.encrypt(req.body.password);
+    User.findOne({_id:id}).then(data=>{
+        if(data.requirementKey && data.requirementKey==code){
+            data.password=encryptedPassword;
+            data.save().then((data)=>{
+                res.send({success:true,message:"Password Changed"});
+            }).catch((err)=>{
+                res.send({success:false,message:"Error Changing password"});
+            });
+        }else{
+            res.send({success:false,message:"Code not match"});    
+        }
+        
+       
+    }).catch((err)=>{
+        res.send({success:false,message:"Error Changing password"});
+    });
+
+})
+app.post("/sendEmail",express.json(),(req,resp)=>{
     let recoverKey = Math.floor(100000 + Math.random() * 900000);;
     let id=req.body.id;
     
-    User.updateOne({_id:id},{requirementKey:recoverKey}).then((data)=>{
-    let content = `Ingrese este codigo para cambiar su Clave: ${requirementKey}`
-        sendEmail(data.userName,"Recuperar/Cambiar Clave",content);
+    User.findOneAndUpdate({_id:id},{requirementKey:recoverKey}).exec().then((data)=>{
+    let content = `Ingrese este codigo para cambiar su Clave: <strong>${data.requirementKey}</strong>`
+    sendEmail(data.userName,"Recuperar/Cambiar Clave",content);
+      resp.end();
     });
    
-
-
-
 });
 
 
-async function sendEmail(to,subject,content){
+ function sendEmail(to,subject,content){
     
     nodemailer.createTestAccount((err, account) => {
         let transporter = nodemailer.createTransport({
@@ -281,7 +301,7 @@ async function sendEmail(to,subject,content){
      
          transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
-                return  console.log(error);
+              return  console.log(error);
             }else{
                 console.log('Message sent: %s', info.messageId);
             }
@@ -295,7 +315,7 @@ async function sendEmail(to,subject,content){
 
 
 
-mongoose.connect('mongodb://popestmaster:Nicole1721%23@localhost:27017/QuiclyMessages')
+mongoose.connect('mongodb://popestmaster:Nicole1721%23@bestdomino.com:27017/QuiclyMessages')
     .then(() => console.log('Mongo Connected'))
     .catch((err) => console.log(err));
 
