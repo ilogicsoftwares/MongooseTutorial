@@ -63,13 +63,15 @@ app.post('/login', express.json(), (req, resp) => {
 
 app.get('/licence/:userid',token,express.json(),(req,res)=>{
     let id =req.params.userid;
-    if(user.licence){
-        resp.send({ estatus: true, message:  user.licence.number });
-        return;    
-    }
-
-    resp.send({ estatus: false, message: null });
-       
+    User.findOne({ _id: id }).populate('licence').then((user) => {
+        
+        if(user.licence){
+            resp.send({ estatus: true, message:  user.licence.number });
+            return;    
+        }
+        resp.send({ estatus: false, message: null });
+    })
+    
 })
 app.post('/CreateUser', express.json(), (req, resp) => {
     
