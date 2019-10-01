@@ -69,7 +69,7 @@ app.get('/licence/:userid',token,express.json(),(req,res)=>{
             res.send({ estatus: true, message:  user.licence.number });
             return;    
         }
-        res.send({ estatus: false, message: null });
+        res.send({ estatus: false, message=""});
     })
     
 })
