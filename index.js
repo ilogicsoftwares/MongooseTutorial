@@ -245,7 +245,7 @@ app.post('/EditMessage/',token, express.json(), (req, resp) => {
 });
 
 app.post("/passwordChange",express.json(),(req,res)=>{
-    let code=req.body.key;
+    let code=req.body.code;
     let id=req.body.id;
   
     User.findOne({_id:id}).then(data=>{
@@ -253,32 +253,33 @@ app.post("/passwordChange",express.json(),(req,res)=>{
             let encryptedPassword=cry.encrypt(req.body.password);
             data.password=encryptedPassword;
             data.save().then((data)=>{
-                res.send({success:true,message:"Password Changed"});
+                res.send({estatus:true,message:"Password Changed"});
             }).catch((err)=>{
-                res.send({success:false,message:"Error Changing password"});
+                res.send({estatus:false,message:"Error Changing password"});
             });
         }else{
-            res.send({success:false,message:"Code not match"});    
+            res.send({estatus:false,message:"Code not match"});    
         }
         
        
     }).catch((err)=>{
-        res.send({success:false,message:"Error Changing password"});
+        res.send({estatus:false,message:"Error Changing password"});
     });
 
 })
 app.post("/sendEmail",express.json(),(req,resp)=>{
-    let recoverKey = Math.floor(100000 + Math.random() * 900000);;
+    let recoverKey = Math.floor(100000 + Math.random() * 900000);
+    console.log(recoverKey);
     let id=req.body.email;
     
     User.findOneAndUpdate({userName:id},{requirementKey:recoverKey}).exec().then((data)=>{
      if(!data){
-         resp.send({success:false,message="Email not found"});
+         resp.send({estatus:false,message:"Email not found"});
          return;
      }
     let content = `Ingrese este codigo para cambiar su Clave: <strong>${recoverKey}</strong>`
     sendEmail(data.userName,"Recuperar/Cambiar Clave",content);
-      resp.send({success:true});
+      resp.send({estatus:true, message:data._id});
     });
    
 });
