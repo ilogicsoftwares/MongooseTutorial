@@ -66,10 +66,10 @@ app.get('/licence/:userid',token,express.json(),(req,res)=>{
     User.findOne({ _id: id }).populate('licence').then((user) => {
         
         if(user.licence){
-            res.send({ estatus: true, message:  user.licence.number });
+            res.send([{ estatus: true, message:  user.licence.number }]);
             return;    
         }
-        res.send({ estatus: false});
+        res.send([{ estatus: false}]);
     })
     
 })
