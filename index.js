@@ -240,7 +240,7 @@ app.post('/EditMessage/',token, express.json(), (req, resp) => {
        
 
     } else {
-        Message.findById(id, (err, message) => {
+        Message.findOne({_id:id}).then((message) => {
             if (titulo)
                 message.titulo = titulo;
             if (descripcion)
