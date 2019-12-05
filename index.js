@@ -249,9 +249,9 @@ app.post('/EditMessage/',token, express.json(), (req, resp) => {
                 message.tipo = tipo;
             message.save((upadtedMessage) => {
                 resp.send("Message Updated");
-            }).catch(err=>{
-              resp.send("Error");
-            });
+            })
+        }).catch(err=>{
+            resp.send("Error");
         });
 
     }
