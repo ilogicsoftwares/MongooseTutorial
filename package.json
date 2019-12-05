@@ -9,6 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-node": "0.0.1-security",
+    "babel-preset-env": "^1.7.0",
     "cryptr": "^4.0.2",
     "express": "^4.16.4",
     "google-play-billing-validator": "^2.0.2",
