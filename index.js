@@ -334,9 +334,9 @@ app.post("/sendEmail",express.json(),(req,resp)=>{
 
 
 
-mongoose.connect('mongodb://popestmaster:Nicole1721%23@bestdomino.com:27017/QuiclyMessages')
+mongoose.connect('mongodb://admin:Nicole1721%23@ds243798.mlab.com:43798/heroku_xm3f0gkh',{useNewUrlParser:true})
     .then(() => console.log('Mongo Connected'))
     .catch((err) => console.log(err));
 
-app.listen('3000', () => console.log('express running in PORT 3000'));
+app.listen(process.env.PORT || 8080, () => console.log('server running'));
 
