@@ -206,7 +206,7 @@ app.post('/billing/',token, express.json(), (req, resp) => {
         })
 
 });
-app.post('/EditMessage/',token, express.json(), (req, resp) => {
+app.post('/EditMessage/', express.json(), (req, resp) => {
 
     let id = req.body.id;
     let userid = req.body.userid;
@@ -248,10 +248,10 @@ app.post('/EditMessage/',token, express.json(), (req, resp) => {
             if (tipo)
                 message.tipo = tipo;
             message.save((upadtedMessage) => {
-                resp.send("Message Updated");
+                resp.send({message:"Message Updated"});
             })
         }).catch(err=>{
-            resp.send("Error");
+            resp.send({message:"Error"});
         });
 
     }
