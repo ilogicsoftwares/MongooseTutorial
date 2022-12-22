@@ -16,7 +16,7 @@
     "cryptr": "^4.0.2",
     "express": "^4.16.4",
     "google-play-billing-validator": "^2.0.2",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "mongoose": "^5.3.12",
     "nodemailer": "^6.3.0"
   },
